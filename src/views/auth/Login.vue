@@ -27,27 +27,18 @@ const store=useStore()
 let email = route.query.email || ref("")
 let password = ref("")
 const login = () => {
-
-  axios.get("/login").then((res) => {
+  axios.post("/user/login",{email:route.query.email||email.value,password:password.value}).then((res) => {
     if (res.status !== 200) {
-      ElMessage({
-        message: '邮箱或者密码无效',
-        type: 'error',
-        duration: 2000,
-      })
+      ElMessage.error(res.data.message)
+      return
     }
     let data = res.data
     let user=data['user_info']
     localStorage.setItem("token", data.token)
+    localStorage.setItem("user", JSON.stringify(user))
     store.commit("setUserInfo",user)
-    ElMessage({
-      message: '登录成功',
-      type: 'success',
-      duration: 1000,
-      onClose: () => {
-        router.replace(`/user/${user['_id']}`)
-      }
-    })
+    ElMessage.success("登录成功")
+    router.replace(`/user/${user['_id']}`)
   })
 }
 </script>

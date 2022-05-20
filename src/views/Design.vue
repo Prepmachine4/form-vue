@@ -1,11 +1,11 @@
 <template>
   <div class="box">
     <div class="header">
-      <el-button @click="back" type="text" :icon="ArrowLeft">表单名称</el-button>
+      <el-button @click="back" type="text" :icon="ArrowLeft">返回</el-button>
       <el-steps class="step" :active="active" finish-status="success" simple>
-        <el-step title="编辑" :icon="Edit" />
-        <el-step title="设置" :icon="Setting"/>
-        <el-step title="发布" :icon="Upload"/>
+        <el-step  title="编辑" :icon="Edit" />
+        <el-step  title="设置" :icon="Setting"/>
+        <el-step  title="发布" :icon="Upload"/>
       </el-steps>
       <div></div>
     </div>
@@ -31,8 +31,11 @@ watch(() =>route.path,(newValue,_)=> {
   active.value=parseInt(newValue.split('/')[3])
 },)
 const back = () => {
-  console.log(user_info)
   router.push(`/user/${user_info.value['_id']}`)
+}
+const changeTab = (index) => {
+  active.value=index
+  router.push(`/form/design/${index}`)
 }
 </script>
 

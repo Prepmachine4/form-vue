@@ -4,18 +4,18 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build --base=/static/",
     "preview": "vite preview"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^1.1.4",
-    "axios": "^0.26.1",
+    "axios": "^0.27.2",
     "bootstrap": "^5.1.3",
     "element-plus": "^2.1.10",
+    "jeeplus-bpmn": "^6.0.10",
     "moment": "^2.29.3",
     "qrcode.vue": "^3.3.3",
     "unplugin-icons": "^0.14.1",
-    "uuid": "^8.3.2",
     "vform3-builds": "^3.0.6",
     "vue": "3.2.26",
     "vue-axios": "^3.4.1",

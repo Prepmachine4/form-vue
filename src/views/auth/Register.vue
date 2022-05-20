@@ -24,25 +24,14 @@
             <el-radio label="企业" />
           </el-radio-group>
         </el-form-item>
+        <el-form-item v-if="ruleForm.type!=='个人'" label="企业名称" prop="name">
+          <el-input v-model="ruleForm.name" />
+        </el-form-item>
       </el-form>
       <el-button @click="register" type="primary" size="large" style="width: 200px" >注册</el-button>
     </el-card>
   </div>
 
-<!--  <div className="login-container">-->
-<!--    <div className="content">-->
-<!--      <div className="title"><span>注册</span></div>-->
-<!--      <div className="input-container">-->
-<!--        <input v-model="email" type="text" name="username" placeholder="邮箱">-->
-<!--        <input v-model="password" type="password" name="password" placeholder="密码">-->
-<!--      </div>-->
-<!--      <div className="submit">-->
-<!--        <el-button @click="register" style="width: 200px" round size="large" type="primary">注册</el-button>-->
-
-<!--        <router-link to="login" style="margin-top: 10px">已有账户&#45;&#45;登录</router-link>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
 </template>
 
 <script setup>
@@ -56,9 +45,10 @@ const router = useRouter()
 const store=useStore()
 
 const ruleForm = reactive({
-  email: 'Hello',
+  email: '',
   password:'',
-  type:'个人'
+  type:'个人',
+  name:undefined
 })
 
 const rules = reactive({
@@ -68,18 +58,18 @@ const rules = reactive({
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
   ],
+  name: [
+    { required: true, message: '请输入企业名称', trigger: 'blur' },
+  ],
 })
 const register = () => {
-  axios.post("/register",ruleForm).then((res) => {
-    if (res.status !== 200) return
-    ElMessage({
-      message: '注册成功',
-      type: 'success',
-      duration: 1000,
-      onClose: () => {
-        router.replace({name:'login',query:{email:ruleForm.email}})
-      }
-    })
+  axios.post("/user/register",ruleForm).then((res) => {
+    if (res.status !== 200) {
+      ElMessage.error(res.data.message)
+      return
+    }
+    ElMessage.success("注册成功")
+    router.replace({name:'login',query:{email:ruleForm.email}})
   })
 }
 
