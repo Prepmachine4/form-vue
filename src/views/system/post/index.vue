@@ -1,24 +1,5 @@
 <template>
    <div class="app-container">
-<!--      <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">-->
-<!--         <el-form-item label="岗位编码" prop="postCode">-->
-<!--            <el-input-->
-<!--               v-model="queryParams.postCode"-->
-<!--               placeholder="请输入岗位编码"-->
-<!--               clearable-->
-<!--               @keyup.enter="handleQuery"-->
-<!--            />-->
-<!--         </el-form-item>-->
-<!--         <el-form-item label="岗位名称" prop="postName">-->
-<!--            <el-input-->
-<!--               v-model="queryParams.postName"-->
-<!--               placeholder="请输入岗位名称"-->
-<!--               clearable-->
-<!--               @keyup.enter="handleQuery"-->
-<!--            />-->
-<!--         </el-form-item>-->
-<!--        -->
-<!--      </el-form>-->
       <el-row :gutter="10" class="mb8">
          <el-col :span="1.5">
             <el-button
@@ -113,7 +94,7 @@ const {  form, rules } = toRefs(data);
 /** 查询岗位列表 */
 function getList() {
   loading.value = true;
-  listPost('/system/post/list').then(response => {
+  listPost().then(response => {
     postList.value = response.data;
     loading.value = false;
   });

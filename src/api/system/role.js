@@ -1,7 +1,8 @@
 import axios from "axios";
-let userInfo=JSON.parse(localStorage.getItem('user'))
 // 查询角色列表
 export function listRole(query) {
+  let userInfo=JSON.parse(localStorage.getItem('user'))
+
   return axios({
     url: '/system/role/list/'+(userInfo['enterprise_id']?userInfo['enterprise_id']:"abc"),
     method: 'get',
@@ -19,6 +20,8 @@ export function getRole(roleId) {
 
 // 新增角色
 export function addRole(data) {
+  let userInfo=JSON.parse(localStorage.getItem('user'))
+
   return axios({
     url: '/system/role/'+(userInfo['enterprise_id']?userInfo['enterprise_id']:"abc"),
     method: 'post',
@@ -28,6 +31,8 @@ export function addRole(data) {
 
 // 修改角色
 export function updateRole(data) {
+  let userInfo=JSON.parse(localStorage.getItem('user'))
+  data['enterprise_id']=userInfo['enterprise_id']?userInfo['enterprise_id']:"abc"
   return axios({
     url: '/system/role',
     method: 'put',

@@ -8,21 +8,20 @@
         <el-input v-model="localFormData.type" disabled></el-input>
       </el-form-item>
       <el-form-item label="节点ID">
-        <el-input v-model="localFormData.id" @input="updateId"></el-input>
+        <el-input v-model="localFormData.id" @change="updateId"></el-input>
       </el-form-item>
       <el-form-item label="节点名称">
-        <el-input v-model="localFormData.name" @input="updateName"></el-input>
+        <el-input v-model="localFormData.name" @change="updateName"></el-input>
       </el-form-item>
 
       <!--usertask-->
       <el-form-item v-if="localFormData.type=='bpmn:UserTask'" label="节点人员">
         <el-select v-model="localFormData.userType" placeholder="请选择" @change="changeUserType">
           <el-option value="assignee" label="指定人员"></el-option>
-          <el-option value="candidateUsers" label="候选人员"></el-option>
-          <el-option value="candidateGroups" label="角色/岗位"></el-option>
+          <el-option value="candidateGroups" label="岗位"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="指定人员" v-if="localFormData.type=='bpmn:UserTask' && localFormData.userType === 'assignee'">
+      <el-form-item label="指定人员id" v-if="localFormData.type=='bpmn:UserTask' && localFormData.userType === 'assignee'">
         <el-select
             v-model="localFormData.assignee"
             placeholder="请选择"
@@ -33,28 +32,11 @@
               v-for="item in bpmnData.assignees"
               :key="item.value"
               :label="item.label"
-              :value="item.value"
+              :value="`${item.label},${item.value}`"
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="候选人员"
-                    v-else-if="localFormData.type=='bpmn:UserTask' && localFormData.userType === 'candidateUsers'">
-        <el-select
-            v-model="localFormData.candidateUsers"
-            placeholder="请选择"
-            key="2"
-            multiple
-            @change="(value) => addUser({candidateUsers: value.join(',') || value})"
-        >
-          <el-option
-              v-for="item in bpmnData.candidateUsers"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-          ></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="角色/岗位"
+      <el-form-item label="岗位id"
                     v-else-if="localFormData.type=='bpmn:UserTask' && localFormData.userType === 'candidateGroups'">
         <el-select
             v-model="localFormData.candidateGroups"
@@ -62,10 +44,10 @@
             @change="(value) => addUser({candidateGroups: value})"
         >
           <el-option
-              v-for="item in bpmnData.roles"
+              v-for="item in bpmnData.candidateGroups"
               :key="item.value"
               :label="item.label"
-              :value="item.value"
+              :value="`${item.label},${item.value}`"
           ></el-option>
         </el-select>
       </el-form-item>
@@ -78,48 +60,21 @@
 </template>
 
 <script>
+import {toRaw} from "vue";
+import {listUser} from "@/api/system/user";
+import {listDept} from "@/api/system/dept";
+import {listPost} from "@/api/system/post";
+
 export default {
   name: "NodePropertyPanel",
+  mounted() {
+    this.getUserAndDept()
+  },
   data() {
     return {
       bpmnData: {
-        assignees: [{
-          value: "${assignee}",
-          label: "表达式"
-        }, {
-          value: "1001",
-          label: "张三"
-        }, {
-          value: "1002",
-          label: "李四"
-        }, {
-          value: "1003",
-          label: "王五"
-        }],
-        candidateUsers: [{
-          value: "1001",
-          label: "张三"
-        }, {
-          value: "1002",
-          label: "李四"
-        }, {
-          value: "1003",
-          label: "王五"
-        }],
-        roles: [
-          {
-            value: "manager",
-            label: "经理"
-          },
-          {
-            value: "personnel",
-            label: "人事"
-          },
-          {
-            value: "charge",
-            label: "主管"
-          }
-        ]
+        assignees: [],
+        candidateGroups: []
       }
     }
   },
@@ -148,17 +103,40 @@ export default {
     nodeElement: {
       handler() {
         if (this.nodeElement.type == "bpmn:StartEvent") {
-          // this.updateName("开始");
+          this.updateName("开始");
         }
         if (this.nodeElement.type == "bpmn:EndEvent") {
-          // this.updateName("结束");
+          this.updateName("结束");
         }
       }
     }
   },
   methods: {
+    getUserAndDept(){
+      listUser().then(res=>{
+        let assignees=[]
+        res.data.forEach(item=>{
+          assignees.push({
+            label:item.name,
+            value:item._id
+          })
+        })
+        this.bpmnData.assignees=assignees
+      })
+      listPost().then(res=>{
+        let candidateGroups=[]
+        res.data.forEach(item=>{
+          candidateGroups.push({
+            label:item.postName,
+            value:item._id
+          })
+        })
+        this.bpmnData.candidateGroups=candidateGroups
+      })
+    },
     updateProperties(properties) {
-      this.modeler.get("modeling").updateProperties(this.nodeElement, properties);
+
+      this.modeler.get("modeling").updateProperties(toRaw(this.nodeElement), properties);
     },
     updateId(name) {
       this.updateProperties({id: name});
@@ -175,7 +153,18 @@ export default {
       this.updateProperties({conditionExpression: newCondition});
     },
     addUser(properties) {
-      this.updateProperties(properties);
+
+      let [label,value]=Object.values(properties)[0].split(',')
+      properties[Object.keys(properties)[0]]=value
+      if(Object.keys(properties)[0]==='assignee'){
+        this.updateProperties({assignee:value});
+
+      }
+      else if(Object.keys(properties)[0]==='candidateGroups'){
+        this.updateProperties({candidateGroups:value});
+      }
+      this.updateProperties({userType:Object.keys(properties)[0]});
+      this.updateName(label)
       Object.assign(properties, {
         userType: Object.keys(properties)[0]
       });
@@ -183,6 +172,7 @@ export default {
     }
   }
 }
+
 </script>
 
 <style scoped>

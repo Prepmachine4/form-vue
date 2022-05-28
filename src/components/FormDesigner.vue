@@ -1,5 +1,5 @@
 <template>
-  <v-form-designer :banned-widgets="['color','html-text','button','time-range','date-range']" :formTemplates="formTemplates" ref="vfdRef">
+  <v-form-designer :banned-widgets="['color','html-text','button','time-range','date-range','textarea','alert']" :formTemplates="formTemplates" ref="vfdRef">
     <span slot="customToolButtons" class="tool">
       <el-button @click="clear">清空</el-button>
       <el-button @click="preview">预览</el-button>
@@ -29,56 +29,46 @@ const formTemplates =ref( [
     description: '表单模板详细说明...'
   },
    {
-    title: '单列表单',
+    title: '出差审批表',
     imgUrl: 'https://ks3-cn-beijing.ksyuncs.com/vform-static/form-samples/t1.png',
-    jsonUrl: 'https://ks3-cn-beijing.ksyuncs.com/vform-static/form-samples/json1.txt',
+    jsonUrl: axios.defaults.baseURL +'/form/template/0',
     description: '表单模板详细说明...'
   },
 
   {
-    title: '多列表单',
+    title: '设备购买申请表',
     imgUrl: 'https://ks3-cn-beijing.ksyuncs.com/vform-static/form-samples/t2.png',
-    jsonUrl: 'https://ks3-cn-beijing.ksyuncs.com/vform-static/form-samples/json2.txt',
+    jsonUrl: axios.defaults.baseURL +'/form/template/1',
     description: '表单模板详细说明...'
   },
-
   {
-    title: '分组表单',
+    title: '请假申请表',
     imgUrl: 'https://ks3-cn-beijing.ksyuncs.com/vform-static/form-samples/t3.png',
-    jsonUrl: 'https://ks3-cn-beijing.ksyuncs.com/vform-static/form-samples/json3.txt',
+    jsonUrl: axios.defaults.baseURL +'/form/template/2',
     description: '表单模板详细说明...'
   },
-
   {
-    title: '标签页表单',
+    title: '意见调查表',
     imgUrl: 'https://ks3-cn-beijing.ksyuncs.com/vform-static/form-samples/t4.png',
-    jsonUrl: 'https://ks3-cn-beijing.ksyuncs.com/vform-static/form-samples/json4.txt',
+    jsonUrl: axios.defaults.baseURL +'/form/template/3',
     description: '表单模板详细说明...'
   },
-
   {
-    title: '主从表单',
+    title: '信息采集表',
     imgUrl: 'https://ks3-cn-beijing.ksyuncs.com/vform-static/form-samples/t5.png',
-    jsonUrl: 'https://ks3-cn-beijing.ksyuncs.com/vform-static/form-samples/json5.txt',
+    jsonUrl: axios.defaults.baseURL +'/form/template/4',
     description: '表单模板详细说明...'
   },
-
   {
-    title: '响应式表单',
+    title: '签到表',
     imgUrl: 'https://ks3-cn-beijing.ksyuncs.com/vform-static/form-samples/t6.png',
-    jsonUrl: 'https://ks3-cn-beijing.ksyuncs.com/vform-static/form-samples/json6.txt',
+    jsonUrl: axios.defaults.baseURL +'/form/template/5',
     description: '表单模板详细说明...'
   },
 
-  {
-    title: '固定表格表单',
-    imgUrl: 'https://ks3-cn-beijing.ksyuncs.com/vform-static/form-samples/t8.png',
-    jsonUrl: 'https://ks3-cn-beijing.ksyuncs.com/vform-static/form-samples/json8.txt',
-    description: '表单模板详细说明...'
-  },
 ])
 let user_info = computed(() => store.state.userInfo)
-//  获取模版字符串
+//  获取自定义模版字符串
 let formList=store.state.formList.filter((item)=>item.is_template)
 formList.forEach(item=>{
   let form_id=item._id
@@ -87,6 +77,9 @@ formList.forEach(item=>{
     jsonUrl: `${axios.defaults.baseURL}/form/struct/${form_id}`,
   },)
 })
+
+
+
 function init() {
   vfdRef.value.setFormJson({
     "widgetList": [{
@@ -165,18 +158,35 @@ const save = (is_template) => {
   const status = parseInt(route.path.split('/')[3])
   let category = route.query.category
   let struct = JSON.stringify(vfdRef.value.getFormJson())
+  console.log(struct)
   let name = vfdRef.value.getFormJson().widgetList[0].options.textContent
   let create_time = moment().format('YYYY-MM-DD HH:mm:ss')
-  axios.post(`/form/${user_info.value._id}`, {struct, is_template, category, name, create_time}).then(res => {
-    if (res.status !== 200) return
-    let _id = res.data._id
-    ElMessage({
-      message: '保存成功',
-      type: 'success',
-      duration: 2000,
+
+  if (route.query._id){
+  //  修改
+    axios.put(`/form`, {_id:route.query._id,struct, name}).then(res => {
+      if (res.status !== 200) return
+      let query=route.query
+      ElMessage({
+        message: '修改成功',
+        type: 'success',
+      })
+      if(!is_template) router.push({path: `/form/design/${status + 1}`, query})
     })
-    if(!is_template) router.push({path: `/form/design/${status + 1}`, query: {_id}})
-  })
+  }
+  else {
+    axios.post(`/form/${user_info.value._id}`, {struct, is_template, category, name, create_time}).then(res => {
+      if (res.status !== 200) return
+      let query=route.query
+      let _id = res.data._id
+      query['_id']=_id
+      ElMessage({
+        message: '保存成功',
+        type: 'success',
+      })
+      if(!is_template) router.push({path: `/form/design/${status + 1}`, query})
+    })
+  }
 }
 </script>
 

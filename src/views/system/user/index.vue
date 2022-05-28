@@ -74,7 +74,7 @@
            <el-table-column label="手机号码" align="center" key="phone" prop="phone"   />
            <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
              <template #default="scope">
-               <el-tooltip content="修改" placement="top" v-if="scope.row._id !== 1">
+               <el-tooltip content="修改" placement="top" v-if="scope.row._id !== scope.row.enterprise_id">
                  <el-button
                      type="text"
                      icon="Edit"
@@ -82,7 +82,7 @@
                      v-hasPermi="['system:user:edit']"
                  ></el-button>
                </el-tooltip>
-               <el-tooltip content="删除" placement="top" v-if="scope.row._id !== 1">
+               <el-tooltip content="删除" placement="top" v-if="scope.row._id !== scope.row.enterprise_id">
                  <el-button
                      type="text"
                      icon="Delete"
@@ -112,6 +112,7 @@
                      :data="deptOptions"
                      :props="{ value: 'id', label: 'label', children: 'children' }"
                      value-key="id"
+                     default-expand-all
                      placeholder="请选择归属部门"
                      check-strictly
                  />

@@ -148,7 +148,7 @@
 
 <script setup name="Role">
 import {addRole, dataScope, delRole, getRole, listRole, updateRole} from "@/api/system/role";
-import {roleMenuTreeselect, treeselect as menuTreeselect} from "@/api/system/menu";
+import {roleMenuTreeselect, treeselect, treeselect as menuTreeselect} from "@/api/system/menu";
 import {treeselect as deptTreeselect, roleDeptTreeselect} from "@/api/system/dept";
 import {useRouter} from "vue-router";
 import {getCurrentInstance, nextTick, reactive, ref, toRefs} from "vue";
@@ -279,13 +279,14 @@ function handleUpdate(row) {
   reset();
   const roleId = row._id || ids.value;
   const roleMenu = getRoleMenuTreeselect(roleId);
+
   getRole(roleId).then(response => {
     form.value = response.data;
     form.value.roleSort = Number(form.value.roleSort);
     open.value = true;
     nextTick(() => {
       roleMenu.then((res) => {
-        let checkedKeys = JSON.parse(res.data['menuIds']);
+        let checkedKeys = res.data['menuIds'];
         checkedKeys.forEach((v) => {
           nextTick(() => {
             menuRef.value.setChecked(v, true, false);
@@ -299,9 +300,9 @@ function handleUpdate(row) {
 
 /** 根据角色ID查询菜单树结构 */
 function getRoleMenuTreeselect(roleId) {
-  return roleMenuTreeselect(roleId).then(response => {
-    menuOptions.value = JSON.parse(response.data['menuTree']);
-    return response;
+  return treeselect().then(response => {
+    menuOptions.value = response;
+    return getRole(roleId);
   });
 }
 

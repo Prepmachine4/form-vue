@@ -22,6 +22,7 @@
       <el-table-column prop="deptName" label="部门名称" ></el-table-column>
       <el-table-column prop="orderNum" label="排序"></el-table-column>
       <el-table-column prop="leader_name" label="负责人" ></el-table-column>
+      <el-table-column prop="phone" label="部门电话" ></el-table-column>
       <el-table-column label="创建时间" align="center" prop="createTime" >
         <template #default="scope">
           <span>{{ scope.row.createTime }}</span>
@@ -30,6 +31,7 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button
+              v-if="scope.row.parentId"
               type="text"
               icon="Edit"
               @click="handleUpdate(scope.row)"
@@ -40,7 +42,7 @@
               @click="handleAdd(scope.row)"
           >新增</el-button>
           <el-button
-              v-if="scope.row.parentId != 0"
+              v-if="scope.row.parentId"
               type="text"
               icon="Delete"
               @click="handleDelete(scope.row)"
@@ -60,17 +62,17 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="显示排序" prop="orderNum">
-              <el-input-number v-model="form.orderNum" controls-position="right" :min="0" />
+              <el-input-number v-model="form.orderNum" controls-position="right" :min=0 />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="负责人" prop="leader_id">
+            <el-form-item label="负责人" prop="leader_id" >
               <el-select v-model="form.leader_id" placeholder="请选择">
                 <el-option
                     v-for="arr in leaderOption"
                     :key="arr._id"
-                    :label="arr.name"
-                    :value="arr._id"
+                    :label="arr.label"
+                    :value="arr.value"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -205,7 +207,11 @@ function handleDelete(row) {
   }).catch(() => {});
 }
 getList()
-listUser().then(res=>leaderOption.value=res.data)
+listUser().then(res=>{
+  res.data.forEach(item=>{
+    leaderOption.value.push({label:item.name,value:item._id})
+  })
+})
 </script>
 <style scoped lang="scss">
 .app-container{

@@ -1,6 +1,6 @@
 <template>
   <div class="box">
-    <Data  :enable-edit="true" :form-data="{}"></Data>
+    <Data   :form-data="{}"></Data>
   </div>
 </template>
 

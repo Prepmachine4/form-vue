@@ -2,6 +2,7 @@
   <div class="box">
     <div class="card">
       <el-form class="form">
+        <!--        共有-->
         <el-form-item label="标签">
           <el-tag
               v-for="tag in tags"
@@ -23,13 +24,33 @@
               @keyup.enter="handleInputConfirm"
               @blur="handleInputConfirm"
           />
-          <el-button v-else  size="small" style="width: 80px" @click="showInput">
+          <el-button v-else size="small" style="width: 80px" @click="showInput">
             添加新标签
           </el-button>
         </el-form-item>
-        <el-form-item label="发布截止时间">
-          <el-date-picker v-model="setting.end_time" type="datetime" placeholder="选择发布截止时间"/>
-        </el-form-item>
+
+        <!--        问卷型特有-->
+        <template v-if="route.query.category==='问卷型'">
+          <el-form-item label="发布截止时间">
+            <el-date-picker v-model="setting.end_time" type="datetime" placeholder="选择发布截止时间"/>
+          </el-form-item>
+        </template>
+
+        <!--        业务型特有-->
+        <template v-else>
+          <el-form-item label="选择的流程">
+            <el-select v-model="setting.process_id" placeholder="请选择业务流程">
+              <el-option
+                  v-for="item in processOptions"
+                  :key="item._id"
+                  :label="item.name"
+                  :value="item._id"
+              />
+            </el-select>
+          </el-form-item>
+        </template>
+
+
         <el-button @click="save" type="primary" class="empty">保存</el-button>
       </el-form>
     </div>
@@ -43,16 +64,20 @@ import axios from "axios";
 import {ElMessage} from "element-plus";
 import {computed} from "vue";
 import {useStore} from "vuex";
-const route=useRoute()
-const router=useRouter()
-const store=useStore()
+import {listProc} from "@/api/process";
+
+const route = useRoute()
+const router = useRouter()
+const store = useStore()
 let user_info = computed(() => store.state.userInfo)
-const setting=reactive({
-  tags:[],
-  end_time:""
+const processOptions=ref([])
+const setting = reactive({
+  tags: [],
+  end_time: "",
+  process_id:undefined
 })
 const inputValue = ref('')
-const tags = toRef(setting,"tags")
+const tags = toRef(setting, "tags")
 const inputVisible = ref(false)
 const InputRef = ref()
 
@@ -66,6 +91,11 @@ const showInput = () => {
     InputRef.value.input.focus()
   })
 }
+const init = () => {
+  listProc().then(res=>{
+    processOptions.value=res.data
+  })
+}
 
 const handleInputConfirm = () => {
   if (inputValue.value) {
@@ -76,35 +106,40 @@ const handleInputConfirm = () => {
 }
 
 const save = () => {
-  const status =parseInt(route.path.split('/')[3])
-  let _id=route.query._id
-  axios.post(`/form/setting/${_id}`,{setting}).then(res=>{
-    if(res.status!==200) return
+  if (route.query.category==='业务型') setting.end_time="2994-09-05 06:03:31"
+
+  const status = parseInt(route.path.split('/')[3])
+  let _id = route.query._id
+  axios.post(`/form/setting/${_id}`, setting).then(res => {
+    if (res.status !== 200) return
     ElMessage({
       message: '保存成功',
       type: 'success',
       duration: 2000,
     })
-    router.push({path:`/form/design/${status+1}`,query:{_id}})
+    router.push({path: `/form/design/${status + 1}`, query: route.query})
   })
 }
+
+init()
 </script>
 
 <style scoped lang="scss">
-.box{
+.box {
   width: 100%;
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  .card{
+
+  .card {
     display: flex;
     width: 50%;
-    height: 50%;
     background-color: white;
     justify-content: center;
     align-items: center;
-    .form{
+    .form {
+      margin: 50px 0;
       display: flex;
       flex-direction: column;
 

@@ -1,11 +1,8 @@
 <template>
   <div>
     <el-button-group>
-      <el-tooltip class="item" effect="dark" content="保存并发布" placement="bottom">
-        <el-button type="primary" size="small" @click="deploy"><i class="fa fa-save"> 保存并发布</i></el-button>
-      </el-tooltip>
-      <el-tooltip class="item" effect="dark" content="保存草稿" placement="bottom">
-        <el-button type="primary" size="small" @click="save"><i class="fa fa-save"> 保存草稿</i></el-button>
+      <el-tooltip class="item" effect="dark" content="保存流程图" placement="bottom">
+        <el-button type="primary" size="small" @click="save"><i class="fa fa-save"> 保存</i></el-button>
       </el-tooltip>
       <el-tooltip class="item" effect="dark" content="打开流程文件" placement="bottom">
         <el-button type="primary" size="small"><i class="fa fa-folder-open"></i></el-button>
@@ -19,6 +16,8 @@
       <el-tooltip class="item" effect="dark" content="下载流程文件" placement="bottom">
         <el-button type="primary" size="small" @click="downloadBpmn"><i class="fa fa-download"></i></el-button>
       </el-tooltip>
+
+
       <el-tooltip class="item" effect="dark" content="撤销" placement="bottom">
         <el-button size="small"><i class="fa fa-rotate-left" @click="undo"></i></el-button>
       </el-tooltip>
@@ -45,7 +44,8 @@
     data() {
       return {
         scale: 1.0,
-        canRedo: false
+        canRedo: false,
+
       }
     },
     props: {
@@ -58,36 +58,12 @@
     },
     components: {},
     methods: {
-      deploy() {
-        let that = this;
-        let _xml;
-        let _svg;
-        this.modeler.saveXML((err, xml) => {
-          if (err) {
-            console.error(err)
-          }
-          _xml = xml;
-        })
-        this.modeler.saveSVG((err, svg) => {
-          if (err) {
-            console.error(err)
-          }
-          _svg = svg;
-        })
-        that.post(this.Apis.deployProcess, {
-          processKey: "s1111",
-          processName: "阿达达",
-          resourceName: "test01",
-          xml: _xml,
-          svg: _svg
-        }, function (data) {
-          console.log(data)
-        });
-      },
+
       save(){
         let that = this;
         let _xml;
         let _svg;
+        console.log(this.modeler)
         this.modeler.saveXML((err, xml) => {
           if (err) {
             console.error(err)

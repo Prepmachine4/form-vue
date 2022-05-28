@@ -1,7 +1,7 @@
 import axios from "axios";
-let userInfo=JSON.parse(localStorage.getItem('user'))
 // 查询部门列表
-export function listDept(query) {
+export function listDept() {
+  let userInfo=JSON.parse(localStorage.getItem('user'))
   return axios({
     url: '/system/dept/list/'+(userInfo['enterprise_id']?userInfo['enterprise_id']:"abc"),
     method: 'get',
@@ -17,6 +17,8 @@ export function getDept(deptId) {
 }
 // 新增部门
 export function addDept(data) {
+  let userInfo=JSON.parse(localStorage.getItem('user'))
+
   return axios({
     url: '/system/dept/'+(userInfo['enterprise_id']?userInfo['enterprise_id']:"abc"),
     method: 'post',
@@ -43,6 +45,7 @@ export function delDept(deptId) {
 
 // 查询部门下拉树结构
 export function treeselect() {
+  let userInfo=JSON.parse(localStorage.getItem('user'))
   return axios({
     url: '/system/dept/treeselect/'+(userInfo['enterprise_id']?userInfo['enterprise_id']:"abc"),
     method: 'get'

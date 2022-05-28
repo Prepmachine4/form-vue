@@ -5,14 +5,20 @@
              label-width="100px"
              size="small"
              label-position="left">
-      <el-form-item label="流程ID">
-        <el-input v-model="localProcessData.key" @input="updateId"></el-input>
-      </el-form-item>
+<!--      <el-form-item label="流程ID">-->
+<!--        <el-input v-model="localProcessData.key" @input="updateId"></el-input>-->
+<!--      </el-form-item>-->
       <el-form-item label="流程名称">
         <el-input v-model="localProcessData.name" @input="updateName"></el-input>
       </el-form-item>
       <el-form-item label="流程描述">
         <el-input v-model="localProcessData.description" @input="updateDesc"></el-input>
+      </el-form-item>
+      <el-form-item label="回退方式">
+        <el-select v-model="localProcessData.backMethod">
+          <el-option :label="'回退一步'" :value="0"></el-option>
+          <el-option :label="'从头开始'" :value="1"></el-option>
+        </el-select>
       </el-form-item>
     </el-form>
   </div>

@@ -32,21 +32,29 @@
       }
     },
     props: {
-      product: String
+      product: String,
+      xml:String
     },
     components: {
       VueHeader, BpmnPanel
     },
     mounted() {
+
       let processId = new Date().getTime();
-      this.initTemplate = templateXml.initTemplate(processId)
-      this.initData = {key: "process" + processId, name: "流程" + processId, xml: this.initTemplate}
+      if(this.xml) {
+        let xml=this.xml.replace(/{str}/g, processId.toString())
+        this.initTemplate=xml
+      }
+      else this.initTemplate = templateXml.initTemplate(processId)
+      this.initData = {key: "process" + processId, name: "流程" + processId, xml: this.initTemplate,backMethod:0}
       this.init();
+
+
     },
     methods: {
       init() {
         // 支持activiti和flowable
-        let _moddleExtensions = this.getModdleExtensions();
+        // let _moddleExtensions = this.getModdleExtensions();
         // 获取画布 element
         this.canvas = this.$refs.bpmnViewer;
         // 创建Bpmn对象
@@ -57,15 +65,16 @@
               translate: ['value', customTranslate]
             }
           ],
-          moddleExtensions: _moddleExtensions
+          // moddleExtensions: _moddleExtensions
         });
-
-
 
         // 初始化建模器内容
         this.initDiagram(this.initTemplate);
+
+
       },
       initDiagram(xml) {
+        let that=this
         this.bpmnModeler.importXML(xml, err => {
           if (err) {
             // this.$Message.error("打开模型出错,请确认该模型符合Bpmn2.0规范");
@@ -75,7 +84,35 @@
             _tag.style.width = "100%";
             _tag.style.height = "700px";
           }
+
+          //  渲染颜色
+          const elementRegistry = this.bpmnModeler.get('elementRegistry');
+          const userTaskList = elementRegistry.filter(
+              (item) => item.type === 'bpmn:UserTask'&& item.businessObject.$attrs.status
+          );
+          userTaskList.forEach(ele=>{
+            let colorMap={
+              "success":'#59C173',
+              "reject":'red'
+            }
+            this.bpmnModeler.get('modeling').setColor(ele,{fill:colorMap[ele.businessObject.$attrs.status]})
+          })
+
+
+          if(that.xml){
+
+            that.bpmnModeler.saveSVG((err, svg) => {
+              if (err) {
+                console.error(err)
+              }
+              // console.log(svg)
+              svg=svg.replace(`width="0" height="0" viewBox="0 0 0 0"`,`width="458" height="92" viewBox="136 184 458 92"`)
+              that.$emit("getStatusSvg",svg)
+            })
+          }
         });
+
+
       },
       handleExportBpmn() {
         const _this = this;
@@ -168,6 +205,7 @@
 
 <style scoped lang="scss">
 .bpmn-viewer-container{
+
   height: 75vh;
   .bpmn-viewer-content{
     height: 60vh;

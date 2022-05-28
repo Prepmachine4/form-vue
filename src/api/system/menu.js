@@ -1,28 +1,42 @@
 import axios from "axios";
 
-// 查询菜单列表
-export function listMenu(query) {
-  return axios({
-    url: '/system/menu/list',
-    method: 'get',
-    params: query
-  })
-}
-
-// 查询菜单详细
-export function getMenu(menuId) {
-  return axios({
-    url: '/system/menu/' + menuId,
-    method: 'get'
-  })
-}
-
 // 查询菜单下拉树结构
 export function treeselect() {
   let tree=[
     {
+      "id": "0",
+      "label": "表单管理",
+      "children":[
+        {
+          "id": "000",
+          "label": "查询表单",
+        },
+        {
+          "id": "001",
+          "label": "查询表单数据",
+        },
+        {
+          "id": "002",
+          "label": "创建问卷型表单",
+        },
+        {
+          "id": "003",
+          "label": "创建业务型表单",
+        },
+        {
+          "id": "004",
+          "label": "修改表单",
+        },
+        {
+          "id": "005",
+          "label": "删除表单",
+        }
+
+      ]
+    },
+    {
       "id": "1",
-      "label": "系统管理",
+      "label": "企业管理",
       "children": [
         {
           "id": "100",
@@ -115,9 +129,36 @@ export function treeselect() {
           ]
         }
       ]
-    }
+    },
+    {
+      "id": "2",
+      "label": "流程管理",
+      "children":[
+        {
+          "id": "200",
+          "label": "查询流程",
+        },
+        {
+          "id": "201",
+          "label": "添加流程",
+        },
+        {
+          "id": "202",
+          "label": "删除流程",
+        },
+      ]
+    },
   ]
   return new Promise(resolve => resolve(tree))
+}
+
+// 查询菜单列表
+export function listMenu(query) {
+  return axios({
+    url: '/system/menu/list',
+    method: 'get',
+    params: query
+  })
 }
 
 // 根据角色ID查询菜单下拉树结构
@@ -128,28 +169,3 @@ export function roleMenuTreeselect(roleId) {
   })
 }
 
-// 新增菜单
-export function addMenu(data) {
-  return axios({
-    url: '/system/menu',
-    method: 'post',
-    data: data
-  })
-}
-
-// 修改菜单
-export function updateMenu(data) {
-  return axios({
-    url: '/system/menu',
-    method: 'put',
-    data: data
-  })
-}
-
-// 删除菜单
-export function delMenu(menuId) {
-  return axios({
-    url: '/system/menu/' + menuId,
-    method: 'delete'
-  })
-}

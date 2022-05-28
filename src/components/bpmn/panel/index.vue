@@ -269,12 +269,14 @@
           assignee: businessObject.$attrs.assignee,
           candidateGroups: businessObject.$attrs.candidateGroups,
           candidateUsers: businessObject.$attrs.candidateUsers ? businessObject.$attrs.candidateUsers.split(",") : [],
-          sequenceFlow: businessObject.conditionExpression ? businessObject.conditionExpression.body : ''
+          sequenceFlow: businessObject.conditionExpression ? businessObject.conditionExpression.body : '',
+
         }
         this.nodeElement = element;
       },
       modifyFormData(data){
         this.formData.assignee = data.assignee;
+        this.formData.candidateGroups = data.candidateGroups;
         this.formData.userType = data.userType;
       }
     },

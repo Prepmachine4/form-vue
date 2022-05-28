@@ -20,6 +20,7 @@ import axios from "axios";
 import {useRouter,useRoute} from 'vue-router'
 import {ElMessage} from "element-plus";
 import {useStore} from "vuex";
+import {getUser} from "@/api/system/user";
 
 const router = useRouter()
 const route = useRoute()
@@ -32,13 +33,17 @@ const login = () => {
       ElMessage.error(res.data.message)
       return
     }
-    let data = res.data
-    let user=data['user_info']
-    localStorage.setItem("token", data.token)
-    localStorage.setItem("user", JSON.stringify(user))
-    store.commit("setUserInfo",user)
-    ElMessage.success("登录成功")
-    router.replace(`/user/${user['_id']}`)
+    localStorage.setItem("token", res.data.token)
+    let _id = res.data['user_info']._id
+    getUser(_id).then(res=>{
+      let user=res.data
+      localStorage.setItem("user", JSON.stringify(user))
+      store.commit("setUserInfo",user)
+      store.dispatch("getFormList",user._id)
+      store.dispatch("getMenuIds",user._id)
+      ElMessage.success("登录成功")
+      router.replace(`/user/${user['_id']}`)
+    })
   })
 }
 </script>

@@ -17,6 +17,7 @@ import directive from "./directive";
 
 
 // axios.defaults.baseURL="https://ustbxwt.com/api"
+// axios.defaults.baseURL="http://127.0.0.1:7000/api"
 axios.defaults.baseURL="http://127.0.0.1:4523/mock/918626"
 axios.defaults.validateStatus=function (status) {
     return status < 500 // default

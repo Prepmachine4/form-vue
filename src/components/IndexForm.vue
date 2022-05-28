@@ -13,7 +13,7 @@
         </template>
       </el-dropdown>
       <div class="search">
-        <el-input v-model="search" placeholder="搜索内容" />
+        <el-input v-model="search" placeholder="搜索内容" clearable/>
       </div>
     </div>
     <el-table @row-click="showStruct" ref="tableDom" :data="filterTableData" >
@@ -36,14 +36,19 @@
         <template #default="scope">
           <el-button type="text" @click="handleTool(0,scope.row)">编辑</el-button>
           <el-button type="text" @click="handleTool(1,scope.row)">数据</el-button>
-          <el-button type="text" @click="handleTool(2,scope.row)">分析</el-button>
-          <el-button type="danger" size="small" @click.stop="handleTool(3,scope.row)">删除</el-button>
+          <el-button v-if="scope.row.category==='问卷型'" type="text" @click="handleTool(2,scope.row)">分析</el-button>
+          <el-button v-if="scope.row.category==='业务型'" type="text" @click.stop="handleTool(3,scope.row)">流程</el-button>
+          <el-button type="danger" size="small" @click.stop="handleTool(4,scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
     <el-drawer size="45%" v-model="drawer" :with-header="false" >
-      <Data  :form-id="selectFormId" v-if="drawer" :enable-edit="false"></Data>
+      <Data  :form-id="selectForm._id" v-if="drawer" :enable-edit="false"></Data>
     </el-drawer>
+
+    <el-dialog v-model="processDialog" top="40vh">
+      <div   style="display: flex;justify-content: center" slot="header"  v-html="processSVG"></div>
+    </el-dialog>
   </div>
 </template>
 
@@ -51,26 +56,25 @@
 import axios from "axios";
 import {useRoute, useRouter} from "vue-router";
 import {useStore} from "vuex";
-import {computed, ref} from "vue";
-import moment from "moment";
+import {computed, onMounted, ref} from "vue";
+
 const route = useRoute()
 const router = useRouter()
 const store = useStore()
 const tableDom=ref()
 let drawer = ref(false)
 let user_id = route.params.user_id
-let selectFormId=ref()
+let selectForm=ref()
 const formList=computed(()=>store.state.formList)
 let search=ref("")
-store.dispatch("getFormList",user_id)
+const processDialog=ref(false)
+const processSVG=ref()
 
 const filterTag = (value, row, column) => {
-  return row.setting.tags.indexOf(value)!==-1
+  return row.setting&&row.setting.tags&&row.setting.tags.indexOf(value)!==-1
 }
-const filterTagData=ref([
-  { text: '嘻嘻', value: '嘻嘻' },
-  { text: '哈哈', value: '哈哈' },
-])
+const filterTagData=computed(()=>store.getters.formLabels)
+
 
 const handleCommand = (command) => {
   let category=command
@@ -82,7 +86,7 @@ const filterTableData = computed(() =>
     )
 )
 const showStruct = (row, column, event) => {
-  selectFormId.value=row._id
+  selectForm.value=row
   drawer.value = true
 }
 
@@ -92,14 +96,24 @@ const handleTool = (index,item) => {
     if (item.setting)
       router.push({path:`/form/design/${2}`,query:{_id:item._id}})
     else
-      router.push({path:`/form/design/${0}`,query:{_id:item._id}})
+      router.push({path:`/form/design/${0}`,query:{_id:item._id,category:item.category}})
   }
   else if(index===1){
-    router.push({name:"data",params:{form_id:item._id},query:{_id:item._id}})
+    router.push({name:"data",params:{form_id:item._id}})
   }
   else if(index===2){
     //分析
     router.push({name:"analysis",query:{_id:item._id}})
+  }
+  else if(index===3){
+    //流程
+    console.log(item.setting)
+    axios.get(`/process/${item.setting.process_id}`).then(res=>{
+      processSVG.value=res.data.svg
+
+      processDialog.value=true
+    })
+
   }
   else{
     //  删除
@@ -108,6 +122,7 @@ const handleTool = (index,item) => {
     })
   }
 }
+
 
 </script>
 <style scoped lang="scss">

@@ -1,7 +1,8 @@
 import axios from "axios";
-let userInfo=JSON.parse(localStorage.getItem('user'))
 // 查询用户列表
 export function listUser(query) {
+  let userInfo=JSON.parse(localStorage.getItem('user'))
+
   return axios({
     url: '/system/user/list/'+(userInfo['enterprise_id']?userInfo['enterprise_id']:"abc"),
     method: 'get',
@@ -19,6 +20,8 @@ export function getUser(userId) {
 
 // 新增用户
 export function addUser(data) {
+  let userInfo=JSON.parse(localStorage.getItem('user'))
+
   return axios({
     url: '/system/user/'+(userInfo['enterprise_id']?userInfo['enterprise_id']:"abc"),
     method: 'post',
@@ -28,6 +31,7 @@ export function addUser(data) {
 
 // 关联用户
 export function addExistUser(data) {
+  let userInfo=JSON.parse(localStorage.getItem('user'))
   return axios({
     url: '/system/user/'+(userInfo['enterprise_id']?userInfo['enterprise_id']:"abc"),
     method: 'put',
@@ -38,7 +42,7 @@ export function addExistUser(data) {
 // 修改用户
 export function updateUser(data) {
   return axios({
-    url: '/system/user',
+    url: '/user/profile',
     method: 'put',
     data: data
   })
@@ -52,38 +56,16 @@ export function delUser(userId) {
   })
 }
 
-
-// 查询用户个人信息
-export function getUserProfile() {
+// 查询用户菜单权限表
+export function getUserMenuIds(userId) {
   return axios({
-    url: '/system/user/profile',
+    url: '/system/user/menu/' + userId,
     method: 'get'
   })
 }
 
-// 修改用户个人信息
-export function updateUserProfile(data) {
-  return axios({
-    url: '/system/user/profile',
-    method: 'put',
-    data: data
-  })
-}
 
 
-// 查询授权角色
-export function getAuthRole(userId) {
-  return axios({
-    url: '/system/user/authRole/' + userId,
-    method: 'get'
-  })
-}
 
-// 保存授权角色
-export function updateAuthRole(data) {
-  return axios({
-    url: '/system/user/authRole',
-    method: 'put',
-    params: data
-  })
-}
+
+

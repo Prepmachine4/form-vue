@@ -16,7 +16,7 @@
           <el-input v-model="ruleForm.email" />
         </el-form-item>
         <el-form-item label="密码" prop="password">
-          <el-input v-model="ruleForm.password" />
+          <el-input type="password" v-model="ruleForm.password" />
         </el-form-item>
         <el-form-item label="账号类型">
           <el-radio-group v-model="ruleForm.type">

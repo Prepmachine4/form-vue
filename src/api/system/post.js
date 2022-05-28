@@ -3,7 +3,7 @@ let userInfo=JSON.parse(localStorage.getItem('user'))
 // 查询岗位列表
 export function listPost(query) {
   return axios({
-    url: '/system/post/list/'+(userInfo['enterprise_id']?userInfo['enterprise_id']:"abc"),
+    url: '/system/post/list/'+userInfo['enterprise_id'],
     method: 'get',
     params: query
   })
@@ -19,6 +19,7 @@ export function getPost(postId) {
 
 // 新增岗位
 export function addPost(data) {
+
   return axios({
     url: '/system/post/'+(userInfo['enterprise_id']?userInfo['enterprise_id']:"abc"),
     method: 'post',

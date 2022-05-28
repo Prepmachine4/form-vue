@@ -29,6 +29,8 @@ const routes = [
             { path: 'profile',name:'profile', component: UserProfile },
             { path: 'edit',name:'edit', component: UserEdit },
             { path: 'process',name:'process', component: () => import('@/views/process/design') },
+            { path: 'audit',name:'audit', component: () => import('@/views/audit') },
+            { path: 'info',name:'info', component: () => import('@/views/info') },
             //    系统管理
             {path: 'system/user',name:'systemUser',component: () => import('@/views/system/user/index')},
             {path: 'system/role',name:'systemRole',component: () => import('@/views/system/role/index')},
