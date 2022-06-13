@@ -33,7 +33,7 @@
                  plain
                  icon="Plus"
                  @click="handleAdd"
-                 v-hasPermi="['system:user:add']"
+                 v-hasPermi="'1002'"
              >添加用户</el-button>
            </el-col>
            <el-col :span="1.5">
@@ -42,21 +42,29 @@
                  plain
                  icon="Plus"
                  @click="handleAddExist"
-                 v-hasPermi="['system:user:add']"
+                 v-hasPermi="'1002'"
              >关联已有用户</el-button>
            </el-col>
            <el-col :span="1.5">
              <el-button
-                 type="warning"
+                 type="success"
                  plain
-                 icon="Download"
-                 @click="handleExport"
-                 v-hasPermi="['system:user:export']"
-             >导出</el-button>
+                 icon="Upload"
+                 @click="handleImport"
+                 v-hasPermi="'1002'"
+             >导入</el-button>
            </el-col>
+<!--           <el-col :span="1.5">-->
+<!--             <el-button-->
+<!--                 type="warning"-->
+<!--                 plain-->
+<!--                 icon="Download"-->
+<!--                 @click="handleExport"-->
+<!--             >导出</el-button>-->
+<!--           </el-col>-->
          </el-row>
 
-         <el-table v-loading="loading" :data="filterTableData" >
+         <el-table v-hasPermi="'1001'" v-loading="loading" :data="filterTableData" >
            <el-table-column type="index"></el-table-column>
            <el-table-column label="用户邮箱" align="center" key="email" prop="email"  :show-overflow-tooltip="true" />
            <el-table-column label="用户姓名" align="center" key="name" prop="name"  :show-overflow-tooltip="true" />
@@ -76,19 +84,20 @@
              <template #default="scope">
                <el-tooltip content="修改" placement="top" v-if="scope.row._id !== scope.row.enterprise_id">
                  <el-button
-                     type="text"
+                     link
                      icon="Edit"
                      @click="handleUpdate(scope.row)"
-                     v-hasPermi="['system:user:edit']"
-                 ></el-button>
+                     v-hasPermi="'1003'"
+                 >修改</el-button>
                </el-tooltip>
                <el-tooltip content="删除" placement="top" v-if="scope.row._id !== scope.row.enterprise_id">
                  <el-button
-                     type="text"
+                     link
+                     type="danger"
                      icon="Delete"
                      @click="handleDelete(scope.row)"
-                     v-hasPermi="['system:user:remove']"
-                 ></el-button>
+                     v-hasPermi="'1004'"
+                 >删除</el-button>
                </el-tooltip>
              </template>
            </el-table-column>
@@ -179,6 +188,36 @@
       </el-dialog>
 
 
+     <!-- 用户导入对话框 -->
+     <el-dialog :title="upload.title" v-model="upload.open" width="400px" append-to-body>
+       <el-upload
+           ref="uploadRef"
+           :limit="1"
+           accept=".xlsx, .xls"
+           :headers="upload.headers"
+           :action="upload.url"
+           :disabled="upload.isUploading"
+           :on-progress="handleFileUploadProgress"
+           :on-success="handleFileSuccess"
+           :auto-upload="false"
+           drag
+       >
+         <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+         <template #tip>
+           <div class="el-upload__tip text-center">
+             <span>仅允许导入xls、xlsx格式文件。</span>
+           </div>
+         </template>
+       </el-upload>
+       <template #footer>
+         <div class="dialog-footer">
+           <el-button type="primary" @click="submitFileForm">确 定</el-button>
+           <el-button @click="upload.open = false">取 消</el-button>
+         </div>
+       </template>
+     </el-dialog>
+
    </div>
 </template>
 
@@ -190,7 +229,8 @@ import {listPost} from "@/api/system/post";
 import {useRouter} from "vue-router";
 import {getCurrentInstance, reactive, ref, toRefs,computed} from "vue";
 import {ElMessage, ElMessageBox} from "element-plus";
-
+import axios from "axios";
+import {store} from "@/vuex";
 const router = useRouter();
 const { proxy } = getCurrentInstance();
 
@@ -219,10 +259,45 @@ const data = reactive({
     nick_name: [{ required: true, message: "用户昵称不能为空", trigger: "blur" }],
     password: [{ required: true, message: "用户密码不能为空", trigger: "blur" }, { min: 5, max: 20, message: "用户密码长度必须介于 5 和 20 之间", trigger: "blur" }],
     email: [{ required:true,type: "email", message: "请输入正确的邮箱地址", trigger: ["blur", "change"] }],
-    phone: [{ required:true,pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: "请输入正确的手机号码", trigger: "blur" }]
+    phone: [{ required:true,pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: "请输入正确的手机号码", trigger: "blur" }],
+    deptId:[{ required:true, message: "选择部门", trigger: "blur" }]
   }
 });
-
+/*** 用户导入参数 */
+const upload = reactive({
+  // 是否显示弹出层（用户导入）
+  open: false,
+  // 弹出层标题（用户导入）
+  title: "",
+  // 是否禁用上传
+  isUploading: false,
+  // 设置上传的请求头部
+  headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+  // 上传的地址
+  url: axios.defaults.baseURL + "/system/user/batch/"+store.state.userInfo.enterprise_id
+})
+/** 导入按钮操作 */
+function handleImport() {
+  upload.title = "用户导入";
+  upload.open = true;
+};
+/**文件上传中处理 */
+const handleFileUploadProgress = (event, file, fileList) => {
+  upload.isUploading = true;
+};
+/** 提交上传文件 */
+function submitFileForm() {
+  proxy.$refs["uploadRef"].submit();
+};
+/** 文件上传成功处理 */
+const handleFileSuccess = (response, file, fileList) => {
+  console.log(response,file,fileList)
+  upload.open = false;
+  upload.isUploading = false;
+  proxy.$refs["uploadRef"].clearFiles();
+  ElMessage.success("导入成功")
+  getList();
+};
 const { form, rules } = toRefs(data);
 
 /** 查询部门下拉树结构 */
@@ -352,6 +427,9 @@ function submitForm() {
           ElMessage.success("关联成功");
           open.value = false;
           getList();
+        }).catch(error => {
+          // Form Validation failed
+          ElMessage.error(error)
         })
       }
       else {

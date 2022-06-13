@@ -1,9 +1,10 @@
 import axios from "axios";
+import {store} from "@/vuex";
 // 查询部门列表
 export function listDept() {
   let userInfo=JSON.parse(localStorage.getItem('user'))
   return axios({
-    url: '/system/dept/list/'+(userInfo['enterprise_id']?userInfo['enterprise_id']:"abc"),
+    url: '/system/dept/list/'+store.state.userInfo['enterprise_id'],
     method: 'get',
   })
 }
@@ -20,7 +21,7 @@ export function addDept(data) {
   let userInfo=JSON.parse(localStorage.getItem('user'))
 
   return axios({
-    url: '/system/dept/'+(userInfo['enterprise_id']?userInfo['enterprise_id']:"abc"),
+    url: '/system/dept/'+store.state.userInfo['enterprise_id'],
     method: 'post',
     data: data
   })
@@ -47,7 +48,7 @@ export function delDept(deptId) {
 export function treeselect() {
   let userInfo=JSON.parse(localStorage.getItem('user'))
   return axios({
-    url: '/system/dept/treeselect/'+(userInfo['enterprise_id']?userInfo['enterprise_id']:"abc"),
+    url: '/system/dept/treeselect/'+store.state.userInfo['enterprise_id'],
     method: 'get'
   })
 }

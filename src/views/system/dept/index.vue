@@ -18,11 +18,17 @@
         row-key="_id"
         :default-expand-all="isExpandAll"
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+        v-hasPermi="'1017'"
     >
       <el-table-column prop="deptName" label="部门名称" ></el-table-column>
       <el-table-column prop="orderNum" label="排序"></el-table-column>
       <el-table-column prop="leader_name" label="负责人" ></el-table-column>
       <el-table-column prop="phone" label="部门电话" ></el-table-column>
+      <el-table-column label="角色" >
+        <template #default="scope">
+          <el-tag style="margin: 0 2px" v-for="roleId in scope.row.roleIds">{{ getRoleNameById(roleId) }}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="创建时间" align="center" prop="createTime" >
         <template #default="scope">
           <span>{{ scope.row.createTime }}</span>
@@ -32,20 +38,24 @@
         <template #default="scope">
           <el-button
               v-if="scope.row.parentId"
-              type="text"
+              link
               icon="Edit"
               @click="handleUpdate(scope.row)"
+              v-hasPermi="'1019'"
           >修改</el-button>
           <el-button
-              type="text"
+              link
               icon="Plus"
               @click="handleAdd(scope.row)"
+              v-hasPermi="'1018'"
           >新增</el-button>
           <el-button
+              link
+              type="danger"
               v-if="scope.row.parentId"
-              type="text"
               icon="Delete"
               @click="handleDelete(scope.row)"
+              v-hasPermi="'1020'"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -82,7 +92,18 @@
               <el-input v-model="form.phone" placeholder="请输入部门电话" maxlength="11" />
             </el-form-item>
           </el-col>
-
+          <el-col :span="12">
+            <el-form-item label="角色">
+              <el-select v-model="form.roleIds" multiple placeholder="请选择">
+                <el-option
+                    v-for="item in roleOptions"
+                    :key="item._id"
+                    :label="item.roleName"
+                    :value="item._id"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
         </el-row>
       </el-form>
       <template #footer>
@@ -100,11 +121,13 @@ import { listDept, getDept, delDept, addDept, updateDept } from "@/api/system/de
 import {listUser} from "@/api/system/user";
 import {getCurrentInstance, nextTick, reactive, ref, toRefs} from "vue";
 import {ElMessage, ElMessageBox} from "element-plus";
+import {listRole} from "@/api/system/role";
 const deptList = ref([]);
 const open = ref(false);
 const loading = ref(true);
 const showSearch = ref(true);
 const title = ref("");
+const roleOptions = ref([]);
 const deptOptions = ref([]);
 const isExpandAll = ref(true);
 const refreshTable = ref(true);
@@ -144,9 +167,13 @@ function reset() {
     orderNum: 0,
     leader_id: undefined,
     phone: undefined,
+    roleIds:undefined
   }
 }
-
+const getRoleNameById = (id) => {
+  if (roleOptions.value.length===0) return
+  return (roleOptions.value.filter(item=>item['_id']===id)[0]).roleName
+}
 /** 新增按钮操作 */
 function handleAdd(row) {
   reset();
@@ -206,12 +233,14 @@ function handleDelete(row) {
     ElMessage.success("删除成功" )
   }).catch(() => {});
 }
+
 getList()
 listUser().then(res=>{
   res.data.forEach(item=>{
     leaderOption.value.push({label:item.name,value:item._id})
   })
 })
+listRole().then(res=>roleOptions.value=res.data);
 </script>
 <style scoped lang="scss">
 .app-container{

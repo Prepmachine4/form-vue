@@ -8,13 +8,14 @@
             <el-tag v-if="editable" type="success">正在发布</el-tag>
             <el-tag v-else type="danger">已截止</el-tag>
           </el-col>
-          <el-col v-if="editable" :span="4"><el-button @click="stopPublish" type="danger">停止发布</el-button></el-col>
+          <el-col v-if="editable&&form.category==='问卷型'" :span="4"><el-button @click="stopPublish" type="danger">停止发布</el-button></el-col>
         </el-row>
         <br>
         <el-row :gutter="10">
           <el-col :span="5"><span>普通链接:</span></el-col>
-          <el-col :span="16"><el-input v-model="url" :placeholder="url" disabled></el-input></el-col>
-          <el-col :span="3"><el-button :disabled="!editable" @click="edit">填写</el-button></el-col>
+          <el-col :span="13"><el-input v-model="url" :placeholder="url" disabled></el-input></el-col>
+          <el-col :span="3"><el-button  @click="copy">复制</el-button></el-col>
+          <el-col :span="3"><el-button type="success" :disabled="!editable" @click="edit">填写</el-button></el-col>
         </el-row>
         <br>
         <el-row :gutter="10">
@@ -30,6 +31,7 @@
 
 <script setup>
 import {useRoute, useRouter,} from "vue-router";
+import useClipboard from 'vue-clipboard3'
 import QrcodeVue from 'qrcode.vue'
 import {useStore} from "vuex";
 import {computed, onMounted, ref} from "vue";
@@ -42,28 +44,40 @@ const router = useRouter()
 const store=useStore()
 let userInfo = store.state.userInfo
 let _id = route.query._id
-let url = axios.defaults.baseURL+`/form/write?_id=${_id}`
+let url = axios.defaults.baseURL.startsWith("https")
+    ? `${window.location.origin}/static/index.html/#/form/write?_id=${_id}`
+    :`${window.location.origin}/#/form/write?_id=${_id}`
+
 let size = 200
 let form=ref()
 let editable=ref(false)
+const emits=defineEmits(["published"])
 
 onMounted(()=>{
   axios.get(`/form/${_id}`).then(res=>{
-    console.log(res.data)
     form.value=res.data
     editable.value=route.query.categorty==='业务型'||(new Date()<=new Date(form.value.setting.end_time))
+    emits("published",editable.value)
   })
 })
+
+const copy = () => {
+  const { toClipboard } = useClipboard()
+  toClipboard(url).then(_=>{
+    ElMessage.success("复制成功")
+  })
+
+}
 
 const edit = () => {
   router.push(`/form/write?_id=${_id}`)
 }
 
-
+// 停止发布
 const stopPublish = () => {
   let old=moment().format('YYYY-MM-DD HH:mm:ss')
-  let loads={setting:{end_time:old}}
-  axios.put(`/form/setting/${_id}`,loads).then(res=>{
+  let setting={end_time:old}
+  axios.post(`/form/setting/${_id}`,setting).then(res=>{
     editable.value=false
     ElMessage.success("停止发布成功")
   })

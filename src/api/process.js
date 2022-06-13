@@ -25,3 +25,10 @@ export function deleteProc(id) {
         method: 'delete',
     })
 }
+
+export function abortProc(id) {
+    return axios({
+        url: '/process/'+id,
+        method: 'put',
+    })
+}

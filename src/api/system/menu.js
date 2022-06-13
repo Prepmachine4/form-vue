@@ -146,6 +146,10 @@ export function treeselect() {
           "id": "202",
           "label": "删除流程",
         },
+        {
+          "id": "203",
+          "label": "终止流程",
+        },
       ]
     },
   ]

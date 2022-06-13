@@ -7,11 +7,12 @@
                plain
                icon="Plus"
                @click="handleAdd"
+               v-hasPermi="'1022'"
             >新增</el-button>
          </el-col>
       </el-row>
 
-      <el-table v-loading="loading" :data="postList" >
+      <el-table v-hasPermi="'1021'" v-loading="loading" :data="postList" >
          <el-table-column type="index" align="center"  />删除
          <el-table-column label="岗位编码" align="center" prop="postCode" />
          <el-table-column label="岗位名称" align="center" prop="postName" />
@@ -24,14 +25,17 @@
          <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
             <template #default="scope">
                <el-button
-                  type="text"
+                   link
                   icon="Edit"
                   @click="handleUpdate(scope.row)"
+                  v-hasPermi="'1023'"
                >修改</el-button>
                <el-button
-                  type="text"
+                   link
+                   type="danger"
                   icon="Delete"
                   @click="handleDelete(scope.row)"
+                  v-hasPermi="'1024'"
                >删除</el-button>
             </template>
          </el-table-column>

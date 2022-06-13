@@ -46,6 +46,7 @@ const routes = [
 
     { path: '/form/write',component: Write},
     { path: '/form/analysis',name: 'analysis',component: Analysis},
+    { path: '/status/success',name:'success', component: ()=>import("@/views/success") },
     { path: '/tmp', component: Tmp },
     {path:'/',redirect:{name:'login'}}
 

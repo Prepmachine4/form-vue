@@ -68,15 +68,6 @@ const formTemplates =ref( [
 
 ])
 let user_info = computed(() => store.state.userInfo)
-//  获取自定义模版字符串
-let formList=store.state.formList.filter((item)=>item.is_template)
-formList.forEach(item=>{
-  let form_id=item._id
-  formTemplates.value.unshift({
-    title: item.name,
-    jsonUrl: `${axios.defaults.baseURL}/form/struct/${form_id}`,
-  },)
-})
 
 
 
@@ -137,6 +128,18 @@ function init() {
 }
 
 onMounted(() => {
+  //获取模板
+  axios.get(`/form/forms/${user_info.value._id}`).then(res => {
+    let formList=res.data.filter((item)=>item.is_template)
+    formList.forEach(item=>{
+      let form_id=item._id
+      formTemplates.value.unshift({
+        title: item.name,
+        jsonUrl: `${axios.defaults.baseURL}/form/struct/${form_id}`,
+      },)
+    })
+  })
+
   //如果有结构就加载
   if (route.query._id){
     axios.get(`/form/${route.query._id}`).then(res=>{

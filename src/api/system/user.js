@@ -1,10 +1,9 @@
 import axios from "axios";
+import {store} from "@/vuex";
 // 查询用户列表
 export function listUser(query) {
-  let userInfo=JSON.parse(localStorage.getItem('user'))
-
   return axios({
-    url: '/system/user/list/'+(userInfo['enterprise_id']?userInfo['enterprise_id']:"abc"),
+    url: '/system/user/list/'+store.state.userInfo['enterprise_id'],
     method: 'get',
     params: query
   })
@@ -20,10 +19,8 @@ export function getUser(userId) {
 
 // 新增用户
 export function addUser(data) {
-  let userInfo=JSON.parse(localStorage.getItem('user'))
-
   return axios({
-    url: '/system/user/'+(userInfo['enterprise_id']?userInfo['enterprise_id']:"abc"),
+    url: '/system/user/'+store.state.userInfo['enterprise_id'],
     method: 'post',
     data: data
   })
@@ -31,9 +28,8 @@ export function addUser(data) {
 
 // 关联用户
 export function addExistUser(data) {
-  let userInfo=JSON.parse(localStorage.getItem('user'))
   return axios({
-    url: '/system/user/'+(userInfo['enterprise_id']?userInfo['enterprise_id']:"abc"),
+    url: '/system/user/'+store.state.userInfo['enterprise_id'],
     method: 'put',
     data: data
   })

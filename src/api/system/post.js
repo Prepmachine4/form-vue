@@ -1,9 +1,9 @@
 import axios from "axios";
-let userInfo=JSON.parse(localStorage.getItem('user'))
+import {store} from "@/vuex";
 // 查询岗位列表
 export function listPost(query) {
   return axios({
-    url: '/system/post/list/'+userInfo['enterprise_id'],
+    url: '/system/post/list/'+store.state.userInfo['enterprise_id'],
     method: 'get',
     params: query
   })
@@ -19,9 +19,8 @@ export function getPost(postId) {
 
 // 新增岗位
 export function addPost(data) {
-
   return axios({
-    url: '/system/post/'+(userInfo['enterprise_id']?userInfo['enterprise_id']:"abc"),
+    url: '/system/post/'+store.state.userInfo['enterprise_id'],
     method: 'post',
     data: data
   })

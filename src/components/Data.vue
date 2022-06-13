@@ -7,13 +7,14 @@
       <el-button v-if="props.change" type="primary" style="width: 200px" @click="changeForm">修改</el-button>
       <el-button v-if="props.enableEdit" type="primary" style="width: 200px" @click="submitForm">提交</el-button>
     </div>
+
   </div>
 </template>
 
 <script setup>
 
-import {ref, reactive, onMounted, computed, nextTick} from 'vue'
-import {ElMessage} from 'element-plus'
+import {ref, reactive, onMounted, nextTick} from 'vue'
+import {ElMessage, ElMessageBox} from 'element-plus'
 import axios from "axios";
 import {useRoute, useRouter} from "vue-router";
 import {useStore} from "vuex";
@@ -27,7 +28,7 @@ let formJson = reactive({})
 let formData = reactive({})
 let optionData = reactive({})
 const vFormRef = ref(null)
-const form=ref()
+const form = ref()
 
 
 const props = defineProps({
@@ -35,21 +36,43 @@ const props = defineProps({
       formData: String,
       formId: String,
       formDataId: String,
-      change:{type: Boolean, default: false},
+      change: {type: Boolean, default: false},
     }
 )
 let form_id = route.query._id || props.formId
 const userInfo = store.state.userInfo
 onMounted(async () => {
-  let option_data = ""
-  form.value=(await axios.get(`/form/${form_id}`)).data
+  form.value = (await axios.get(`/form/${form_id}`)).data
+  if (form.value.category==='问卷型'&&!props.formData){
+    //权限控制
+    if (form.value.setting.user_range === 1 && !localStorage.getItem("user")) {
+      //  需要await 登录
+      ElMessage.error("请先登录")
+      await router.replace({name: 'login'})
+      return
+    } else if (form.value.setting.user_range === 2) {
+      //  需要秘钥
+      ElMessageBox.prompt('', '请输入秘钥', {
+        confirmButtonText: '确定',
+        showClose:false,
+        inputType:'password',
+        showCancelButton:false,
+        inputValidator:(value)=>value===form.value.setting.password,
+        inputErrorMessage:'秘钥错误'
+      }).then(({value}) => {
+        ElMessage.success({message: `秘钥正确`})
+      })
+    }
+  }
+
+
   formJson = form.value.struct
   vFormRef.value.setFormJson(formJson)
   await nextTick(() => {
     if (localStorage.getItem("formData")) vFormRef.value.setFormData(JSON.parse(localStorage.getItem("formData")))
     else if (props.formData) vFormRef.value.setFormData(JSON.parse(props.formData))
 
-    if (!props.change) vFormRef.value.disableForm()
+    if (!props.change&&!props.enableEdit) vFormRef.value.disableForm()
 
   })
 
@@ -63,13 +86,14 @@ const onStage = () => {
 const submitForm = () => {
   vFormRef.value.getFormData().then(formData => {
     let data = JSON.stringify(formData)
-    let user_id = userInfo._id
+    let user_id = userInfo?userInfo._id:undefined
     let create_time = moment().format('YYYY-MM-DD HH:mm:ss')
     axios.post(`/data/${form_id}`, {create_time, user_id, data}).then(res => {
-      if (res.status !== 200) ElMessage.error("提交失败！")
+      if (res.status !== 200) ElMessage.error(res.data.message)
       else {
-        ElMessage.success("提交成功！")
-        router.push(`/user/${user_id}`)
+        ElMessage.success("填写成功！")
+        router.replace({name:'success'})
+
       }
     })
     localStorage.removeItem("formData")

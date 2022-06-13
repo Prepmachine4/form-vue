@@ -7,14 +7,14 @@
             plain
             icon="Plus"
             @click="handleAdd"
-            v-hasPermi="['system:role:add']"
+            v-hasPermi="'1009'"
         >新增
         </el-button>
       </el-col>
     </el-row>
 
     <!-- 表格数据 -->
-    <el-table v-loading="loading" :data="roleList">
+    <el-table v-hasPermi="'1008'" v-loading="loading" :data="roleList">
       <el-table-column type="index"></el-table-column>
       <el-table-column label="角色名称" prop="roleName" :show-overflow-tooltip="true"/>
       <el-table-column label="权限字符" prop="roleKey" :show-overflow-tooltip="true"/>
@@ -27,26 +27,29 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
-          <el-tooltip content="修改" placement="top" v-if="!scope.row.admin">
+          <el-tooltip  content="修改" placement="top" v-if="!scope.row.admin">
             <el-button
-                type="text"
+                link
                 icon="Edit"
                 @click="handleUpdate(scope.row)"
-            ></el-button>
+                v-hasPermi="'1010'"
+            >修改</el-button>
           </el-tooltip>
-          <el-tooltip content="数据权限" placement="top" v-if="!scope.row.admin">
+<!--          <el-tooltip v-hasPermi="'1010'" content="数据权限" placement="top" v-if="!scope.row.admin">-->
+<!--            <el-button-->
+<!--                text-->
+<!--                icon="CircleCheck"-->
+<!--                @click="handleDataScope(scope.row)"-->
+<!--            ></el-button>-->
+<!--          </el-tooltip>-->
+          <el-tooltip  content="删除" placement="top" v-if="!scope.row.admin">
             <el-button
-                type="text"
-                icon="CircleCheck"
-                @click="handleDataScope(scope.row)"
-            ></el-button>
-          </el-tooltip>
-          <el-tooltip content="删除" placement="top" v-if="!scope.row.admin">
-            <el-button
-                type="text"
+                link
+                type="danger"
                 icon="Delete"
                 @click="handleDelete(scope.row)"
-            ></el-button>
+                v-hasPermi="'1011'"
+            >删除</el-button>
           </el-tooltip>
         </template>
       </el-table-column>

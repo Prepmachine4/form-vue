@@ -177,6 +177,7 @@
         let initData = this.initData;
         data.procId = initData.key;
         data.name = initData.name;
+        data.backMethod=initData.backMethod;
         this.$emit("processSave",data);
       },
       restart() {

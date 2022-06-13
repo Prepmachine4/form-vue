@@ -3,7 +3,7 @@
     <div class="content">
       <div class="title"><span>登录</span></div>
       <div class="input-container">
-        <input v-model="email" type="text" name="email" placeholder="邮箱">
+        <input v-model="email" text name="email" placeholder="邮箱">
         <input v-model="password" type="password" name="password" placeholder="密码">
       </div>
       <div class="submit">
@@ -27,6 +27,16 @@ const route = useRoute()
 const store=useStore()
 let email = route.query.email || ref("")
 let password = ref("")
+
+if(localStorage.getItem("user")){
+  let user=JSON.parse(localStorage.getItem("user"))
+  store.commit("setUserInfo",user)
+  if(user.enterprise_id){
+    store.dispatch("getMenuIds",user._id)
+  }
+  router.replace(`/user/${user['_id']}`)
+}
+
 const login = () => {
   axios.post("/user/login",{email:route.query.email||email.value,password:password.value}).then((res) => {
     if (res.status !== 200) {
@@ -39,8 +49,9 @@ const login = () => {
       let user=res.data
       localStorage.setItem("user", JSON.stringify(user))
       store.commit("setUserInfo",user)
-      store.dispatch("getFormList",user._id)
-      store.dispatch("getMenuIds",user._id)
+      if(user.enterprise_id){
+        store.dispatch("getMenuIds",user._id)
+      }
       ElMessage.success("登录成功")
       router.replace(`/user/${user['_id']}`)
     })
