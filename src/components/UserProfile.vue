@@ -37,7 +37,7 @@ import {computed, reactive, ref} from 'vue'
 import {useStore} from "vuex";
 import {ElMessage} from "element-plus";
 import axios from "axios";
-import {updateUser} from "@/api/system/user";
+import {getUser, updateUser} from "@/api/system/user";
 const store=useStore()
 const userInfo=computed(()=>store.state.userInfo)
 const data = reactive({
@@ -62,7 +62,11 @@ const save = () => {
       updateUser(data).then(res=>{
         if(res.status===200) {
           ElMessage.success("保存成功")
-          store.commit("")
+          getUser(store.state.userInfo._id).then(res=>{
+            let user=res.data
+            localStorage.setItem("user", JSON.stringify(user))
+            store.commit("setUserInfo",user)
+          })
         }
       })
     }
