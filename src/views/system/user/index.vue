@@ -424,12 +424,13 @@ function submitForm() {
       }
       else if(title.value === "关联已有用户"){
         addExistUser(form.value).then(response => {
+          if (response.status!==200){
+            ElMessage.error(response.data)
+            return
+          }
           ElMessage.success("关联成功");
           open.value = false;
           getList();
-        }).catch(error => {
-          // Form Validation failed
-          ElMessage.error(error)
         })
       }
       else {

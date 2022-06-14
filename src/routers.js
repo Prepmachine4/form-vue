@@ -1,5 +1,6 @@
 import {createRouter, createWebHashHistory} from 'vue-router'
 import Login from "./views/auth/Login";
+import Deploy from "./views/Deploy";
 import Register from "./views/auth/Register";
 import NotFound from "./views/NotFound";
 import Index from "./views/Index";
@@ -15,13 +16,14 @@ import IndexForm from "./components/IndexForm";
 import profile from "./components/FormPublish";
 import UserEdit from "./components/UserEdit";
 import UserProfile from "./components/UserProfile";
-import {useStore} from "vuex";
+
 
 
 const routes = [
     { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
     { path: '/auth/login', component: Login,name:'login' },
     { path: '/auth/register', component: Register ,name: 'register'},
+    { path: '/deploy', component: Deploy },
 
     { path: '/user/:user_id', component: Index,children: [
             {path:"",name:'form',component: IndexForm},
@@ -61,7 +63,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to,from,next)=>{
-    const store=useStore()
+
     if (to.path.startsWith('/auth')||from.path=='/'||from.path.startsWith('/auth')) {
         next()
     } else {

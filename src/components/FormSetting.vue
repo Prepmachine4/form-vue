@@ -138,9 +138,10 @@ const init = () => {
   })
   axios.get(`/form/setting/${route.query._id}`).then(res => {
     let data = res.data
+    console.log(data)
     if (res.data.end_time) setting.end_time = data.end_time
     if (res.data.tags) setting.tags = data.tags
-    if (res.data.user_range) setting.user_range = data.user_range
+    if (res.data.user_range!==undefined) setting.user_range = data.user_range
     if (res.data.password) setting.password = data.password
     if (res.data.repeat_edit) setting.repeat_edit = data.repeat_edit
     if (res.data.enable_search) setting.enable_search = data.enable_search

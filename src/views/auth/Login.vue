@@ -8,14 +8,14 @@
       </div>
       <div class="submit">
         <el-button @click="login" style="width: 200px" round size="large" type="primary">登录</el-button>
-        <router-link to="register" style="margin-top: 10px">----立即注册----</router-link>
+        <router-link  v-if="deplolyMethod==='public'" to="register" style="margin-top: 10px">----立即注册----</router-link>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import {ref} from "vue";
+import {getCurrentInstance, ref} from "vue";
 import axios from "axios";
 import {useRouter,useRoute} from 'vue-router'
 import {ElMessage} from "element-plus";
@@ -27,6 +27,7 @@ const route = useRoute()
 const store=useStore()
 let email = route.query.email || ref("")
 let password = ref("")
+
 
 if(localStorage.getItem("user")){
   let user=JSON.parse(localStorage.getItem("user"))

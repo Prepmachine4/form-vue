@@ -54,5 +54,11 @@ app.config.globalProperties.handleTree = handleTree
 app.config.globalProperties.addDateRange = addDateRange
 app.config.globalProperties.selectDictLabel = selectDictLabel
 
+// 全局配置
+// 私有化 or 公有化
+app.config.globalProperties.deplolyMethod = 'private'
+
 app.mount('#app')
+
+export default app
 
