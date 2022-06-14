@@ -53,13 +53,13 @@
               <el-radio :label="false">否</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="填写用户是否可查看别人填写结果">
+          <el-form-item label="填写结果是否公开">
             <el-radio-group v-model="setting.look_result" size="small">
               <el-radio :label="true">是</el-radio>
               <el-radio :label="false">否</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="填写用户是否可浏览汇总结果">
+          <el-form-item label="汇总结果是否公开">
             <el-radio-group v-model="setting.look_analysis" size="small">
               <el-radio :label="true">是</el-radio>
               <el-radio :label="false">否</el-radio>

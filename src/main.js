@@ -56,7 +56,7 @@ app.config.globalProperties.selectDictLabel = selectDictLabel
 
 // 全局配置
 // 私有化 or 公有化
-app.config.globalProperties.deplolyMethod = 'private'
+app.config.globalProperties.deplolyMethod = 'public'
 
 app.mount('#app')
 
