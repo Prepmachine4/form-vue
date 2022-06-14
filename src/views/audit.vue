@@ -58,8 +58,7 @@
 
 <script setup>
 import {ref} from "vue";
-import vueEsign from 'vue-esign'
-import Data from "@/components/data";
+import Data from "@/components/Data";
 import {listAudit, listNeedAudit, postAudit} from "@/api/audit";
 import {useStore} from "vuex";
 import {ElMessage} from "element-plus";
