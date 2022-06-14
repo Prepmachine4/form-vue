@@ -44,9 +44,7 @@ const router = useRouter()
 const store=useStore()
 let userInfo = store.state.userInfo
 let _id = route.query._id
-let url = axios.defaults.baseURL.startsWith("https")
-    ? `${window.location.origin}/static/index.html/#/form/write?_id=${_id}`
-    :`${window.location.origin}/#/form/write?_id=${_id}`
+let url = location.host+`/form/write?_id=${_id}`
 
 let size = 200
 let form=ref()
