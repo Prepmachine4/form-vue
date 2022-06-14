@@ -44,10 +44,11 @@ stages:
         script: |-
           # 请在此输入部署脚本，如启动Java应用如下
           # nohup java -jar test.jar > nohup.out &
-          pwd
           cd /root/gitee_go/deploy/
-          tar -zxvf /root/gitee_go/deploy/output.tar.gz
-          mv .dist/ /usr/local/nginx/html/
+          pwd
+          tar -zxvf /root/gitee_go/deploy/output.tar.gz .
+          rm -rf /usr/local/nginx/html/dist/
+          mv ./dist /usr/local/nginx/html/
         strategy:
           retry: '0'
 permissions:
