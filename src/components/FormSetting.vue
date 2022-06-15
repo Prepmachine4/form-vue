@@ -133,21 +133,23 @@ const showInput = () => {
   })
 }
 const init = () => {
-  listProc().then(res => {
-    processOptions.value = res.data
-  })
+  if (route.query.category==='业务型')
+    listProc().then(res => {
+      processOptions.value = res.data
+    })
+
   axios.get(`/form/setting/${route.query._id}`).then(res => {
     let data = res.data
     console.log(data)
-    if (res.data.end_time) setting.end_time = data.end_time
-    if (res.data.tags) setting.tags = data.tags
+    if (res.data.end_time!==undefined) setting.end_time = data.end_time
+    if (res.data.tags!==undefined) setting.tags = data.tags
     if (res.data.user_range!==undefined) setting.user_range = data.user_range
-    if (res.data.password) setting.password = data.password
-    if (res.data.repeat_edit) setting.repeat_edit = data.repeat_edit
-    if (res.data.enable_search) setting.enable_search = data.enable_search
-    if (res.data.look_result) setting.look_result = data.look_result
-    if (res.data.look_analysis) setting.look_analysis = data.look_analysis
-    if (res.data.process_id) setting.process_id = data.process_id
+    if (res.data.password!==undefined) setting.password = data.password
+    if (res.data.repeat_edit!==undefined) setting.repeat_edit = data.repeat_edit
+    if (res.data.enable_search!==undefined) setting.enable_search = data.enable_search
+    if (res.data.look_result!==undefined) setting.look_result = data.look_result
+    if (res.data.look_analysis!==undefined) setting.look_analysis = data.look_analysis
+    if (res.data.process_id!==undefined) setting.process_id = data.process_id
   })
 
 }
