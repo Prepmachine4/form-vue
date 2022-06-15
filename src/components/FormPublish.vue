@@ -44,8 +44,9 @@ const router = useRouter()
 const store=useStore()
 let userInfo = store.state.userInfo
 let _id = route.query._id
-let url = location.host+`/#/form/write?_id=${_id}`
+let url = location.protocol+'//'+location.host+`/#/form/write?_id=${_id}`
 
+console.log(location.protocol)
 let size = 200
 let form=ref()
 let editable=ref(false)
