@@ -124,14 +124,17 @@ const filterTag = (value, row, column) => {
 }
 
 const filterTagData = computed(() => {
+  // 构造标签
   let res = []
+  let tmpTags=[]
   formList.value.forEach(item => {
     if (item.setting && item.setting.tags) {
       item.setting.tags.forEach(tag => {
-        if (!res.includes(tag)) res.push({text: tag, value: tag})
+        if (tmpTags.indexOf(tag)<0) tmpTags.push(tag)
       })
     }
   })
+  tmpTags.forEach(tag=>res.push({text: tag, value: tag}))
   return res
 })
 

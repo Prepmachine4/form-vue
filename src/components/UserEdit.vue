@@ -106,9 +106,22 @@ const showData = (row, column, event) => {
   drawer.value = true
 }
 const filterTag = (value, row, column) => {
-  return row.setting&&row.setting.tags&&row.setting.tags.indexOf(value)!==-1
+  return row.form.setting&&row.form.setting.tags&&row.form.setting.tags.indexOf(value)!==-1
 }
-const filterTagData=computed(()=>store.getters.formLabels)
+const filterTagData=computed(()=> {
+  // 构造标签
+  let res = []
+  let tmpTags=[]
+  tableData.value.forEach(item => {
+    if (item.form.setting && item.form.setting.tags) {
+      item.form.setting.tags.forEach(tag => {
+        if (tmpTags.indexOf(tag)<0) tmpTags.push(tag)
+      })
+    }
+  })
+  tmpTags.forEach(tag=>res.push({text: tag, value: tag}))
+  return res
+})
 </script>
 
 <style scoped lang="scss">
