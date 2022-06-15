@@ -81,9 +81,10 @@ async function init() {
         })
       }
       else if(key.startsWith("checkbox")){
+        console.log(titleList.value[index].options)
         value.forEach(t=>{
           titleList.value[index].options.forEach(it=>{
-            if(it[value]!==undefined)  it[t]=it[t]+1
+            if(it[t]!==undefined)  it[t]=it[t]+1
           })
         })
       }
@@ -94,6 +95,7 @@ async function init() {
   formStruct.value["widgetList"].filter(item=>item.type == "radio"||item.type == "checkbox").forEach((item,index) => {
     questionList.value.push(getQuestionItem(item.options,index))
   })
+
 
 }
 init()
