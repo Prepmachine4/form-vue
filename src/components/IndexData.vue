@@ -82,6 +82,7 @@ const showData = (row, column, event) => {
 }
 const getStatusSvg = (svg) => {
   svg=svg.split('\n')[3]
+  svg=svg.replace(`width="458" height="92" viewBox="136 184 458 92"`,`width="618" height="92" viewBox="136 184 618 92"`)
   statusSvg.value=svg
   console.log(statusSvg.value)
 }

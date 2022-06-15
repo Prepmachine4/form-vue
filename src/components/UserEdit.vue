@@ -27,7 +27,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-drawer size="45%" v-model="drawer" :with-header="false" >
+    <el-drawer size="40%" v-model="drawer" :with-header="false" >
       <div style="text-align: center;" slot="header" v-if="selectForm.form.category==='业务型'" v-html="statusSvg"></div>
       <Data :formDataId="selectForm._id" :change="change" :form-id="selectFormId" v-if="drawer" :enable-edit="false" :form-data="formData"></Data>
       <el-divider v-if="selectForm.form.category==='业务型'">审核内容</el-divider>
@@ -90,6 +90,7 @@ const change=computed(()=>{
 })
 const getStatusSvg = (svg) => {
   svg=svg.split('\n')[3]
+  svg=svg.replace(`width="458" height="92" viewBox="136 184 458 92"`,`width="618" height="92" viewBox="136 184 618 92"`)
   statusSvg.value=svg
   console.log(statusSvg.value)
 }
