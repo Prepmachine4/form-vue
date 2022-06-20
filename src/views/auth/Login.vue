@@ -33,9 +33,13 @@ if(localStorage.getItem("user")){
   let user=JSON.parse(localStorage.getItem("user"))
   store.commit("setUserInfo",user)
   if(user.enterprise_id){
-    store.dispatch("getMenuIds",user._id)
+    store.dispatch("getMenuIds",user._id).then(_=>{
+      router.replace(`/user/${user['_id']}`)
+    })
   }
-  router.replace(`/user/${user['_id']}`)
+  else{
+    router.replace(`/user/${user['_id']}`)
+  }
 }
 
 const login = () => {
@@ -51,10 +55,15 @@ const login = () => {
       localStorage.setItem("user", JSON.stringify(user))
       store.commit("setUserInfo",user)
       if(user.enterprise_id){
-        store.dispatch("getMenuIds",user._id)
+        store.dispatch("getMenuIds",user._id).then(_=>{
+          ElMessage.success("登录成功")
+          router.replace(`/user/${user['_id']}`)
+        })
       }
-      ElMessage.success("登录成功")
-      router.replace(`/user/${user['_id']}`)
+      else{
+        ElMessage.success("登录成功")
+        router.replace(`/user/${user['_id']}`)
+      }
     })
   })
 }

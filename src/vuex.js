@@ -19,6 +19,7 @@ const store = createStore({
         getMenuIds({commit},user_id){
             return getUserMenuIds(user_id).then(res=>{
                 commit("setMenuIds",res.data)
+
             })
         }
     }
