@@ -16,9 +16,7 @@ import directive from "./directive";
 
 
 
-axios.defaults.baseURL="https://ustbxwt.com/api"
-// axios.defaults.baseURL="http://127.0.0.1:13145/api"
-// axios.defaults.baseURL="http://127.0.0.1:4523/mock/918626"
+
 axios.defaults.validateStatus=function (status) {
     return status < 500 // default
 }
@@ -26,6 +24,8 @@ axios.defaults.validateStatus=function (status) {
 axios.interceptors.request.use(function (config) {
     // 在发送请求之前做些什么
     config.headers.common["Authorization"]=`Bearer ${localStorage.getItem("token")}`
+    // 加上/api路径
+    config.url = `/api${config.url}`;
     return config;
 }, function (error) {
     // 对请求错误做些什么

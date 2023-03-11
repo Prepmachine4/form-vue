@@ -274,7 +274,7 @@ const upload = reactive({
   // 设置上传的请求头部
   headers: { Authorization: "Bearer " + localStorage.getItem("token") },
   // 上传的地址
-  url: axios.defaults.baseURL + "/system/user/batch/"+store.state.userInfo.enterprise_id
+  url: "/api/system/user/batch/"+store.state.userInfo.enterprise_id
 })
 /** 导入按钮操作 */
 function handleImport() {

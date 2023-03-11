@@ -31,38 +31,38 @@ const formTemplates =ref( [
    {
     title: '出差审批表',
     imgUrl: 'https://ks3-cn-beijing.ksyuncs.com/vform-static/form-samples/t1.png',
-    jsonUrl: axios.defaults.baseURL +'/form/template/0',
+    jsonUrl: '/api/form/template/0',
     description: '表单模板详细说明...'
   },
 
   {
     title: '设备购买申请表',
     imgUrl: 'https://ks3-cn-beijing.ksyuncs.com/vform-static/form-samples/t2.png',
-    jsonUrl: axios.defaults.baseURL +'/form/template/1',
+    jsonUrl: '/api/form/template/1',
     description: '表单模板详细说明...'
   },
   {
     title: '请假申请表',
     imgUrl: 'https://ks3-cn-beijing.ksyuncs.com/vform-static/form-samples/t3.png',
-    jsonUrl: axios.defaults.baseURL +'/form/template/2',
+    jsonUrl: '/api/form/template/2',
     description: '表单模板详细说明...'
   },
   {
     title: '意见调查表',
     imgUrl: 'https://ks3-cn-beijing.ksyuncs.com/vform-static/form-samples/t4.png',
-    jsonUrl: axios.defaults.baseURL +'/form/template/3',
+    jsonUrl: '/api/form/template/3',
     description: '表单模板详细说明...'
   },
   {
     title: '信息采集表',
     imgUrl: 'https://ks3-cn-beijing.ksyuncs.com/vform-static/form-samples/t5.png',
-    jsonUrl: axios.defaults.baseURL +'/form/template/4',
+    jsonUrl: '/api/form/template/4',
     description: '表单模板详细说明...'
   },
   {
     title: '签到表',
     imgUrl: 'https://ks3-cn-beijing.ksyuncs.com/vform-static/form-samples/t6.png',
-    jsonUrl: axios.defaults.baseURL +'/form/template/5',
+    jsonUrl: '/api/form/template/5',
     description: '表单模板详细说明...'
   },
 
@@ -135,7 +135,7 @@ onMounted(() => {
       let form_id=item._id
       formTemplates.value.unshift({
         title: item.name,
-        jsonUrl: `${axios.defaults.baseURL}/form/struct/${form_id}`,
+        jsonUrl: `/api/form/struct/${form_id}`,
       },)
     })
   })

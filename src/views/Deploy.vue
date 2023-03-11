@@ -126,7 +126,7 @@ const commit = () => {
           localStorage.setItem("token",token)
           getUser(_id).then(res=>{
             let user=res.data
-            upload.url= axios.defaults.baseURL + "/system/user/batch/"+user.enterprise_id
+            upload.url= "/api/system/user/batch/"+user.enterprise_id
             upload.headers={ Authorization: "Bearer " + token },
 
                 uploadRef.value.submit()

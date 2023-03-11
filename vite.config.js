@@ -7,6 +7,7 @@ import {ElementPlusResolver} from 'unplugin-vue-components/resolvers'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+    base: '/static/', // 打包后的文件路径
     resolve: {
         extensions: ['.js', '.vue', '.json'],
         alias: {
@@ -60,6 +61,20 @@ export default defineConfig({
         //...
         commonjsOptions: {
             include: /node_modules|lib/
-        }
+        },
+
+    },
+    server: {
+        proxy: {
+            '/api': {
+                target: 'http://127.0.0.1:13145', // 后台服务器地址
+                changeOrigin: true, // 是否改变请求头中的 Origin 字段值，默认为 true
+                // rewrite: (path) => path.replace(/^\/api/, ''), // 将请求路径中的 /api 前缀去掉
+            },
+            '/static': {
+                target: 'http://127.0.0.1:13145', // 后台服务器地址
+                changeOrigin: true, // 是否改变请求头中的 Origin 字段值，默认为 true
+            },
+        },
     },
 })
